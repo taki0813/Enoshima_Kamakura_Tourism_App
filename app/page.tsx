@@ -35,6 +35,7 @@ interface DiagnosisData {
   customStartLocation?: string
   endTime?: string
   whatToDo?: string
+  visitTimePreference?: "morning" | "afternoon" | "evening" | "recommended" | ""
 }
 
 export default function HomePage() {
@@ -46,6 +47,7 @@ export default function HomePage() {
     mustVisit: "",
     travelStyle: "",
     interests: [],
+    visitTimePreference: ""
   })
   const [showResults, setShowResults] = useState(false)
   const [showMap, setShowMap] = useState(false)
@@ -141,6 +143,16 @@ export default function HomePage() {
       isCustomInput: true,
       options: [],
       isOptional: true,
+    },
+    {
+      title: "おすすめの訪問時間帯はありますか？",
+      key: "visitTimePreference" as keyof DiagnosisData,
+      options: [
+        { value: "recommended", label: "AIのおすすめ時間帯で" },
+        { value: "morning", label: "午前中（〜12:00）" },
+        { value: "afternoon", label: "午後（12:00〜17:00）" },
+        { value: "evening", label: "夕方以降（17:00〜）" },
+      ],
     },
   ]
 
@@ -489,7 +501,7 @@ export default function HomePage() {
   if (currentView === 'coupons' || showCoupons) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-        <CouponInterface onBack={() => setCurrentView('results')} />
+        <CouponInterface onBack={() => setShowCoupons(false)} />
         <NavigationBar />
       </div>
     )
@@ -783,8 +795,6 @@ export default function HomePage() {
                   {steps[currentStep].isOptional && "（任意項目）"}
                   {steps[currentStep].key === "customStartLocation" 
                     ? "開始場所を自由に記述してください"
-                    : steps[currentStep].key === "whatToDo"
-                    ? "やりたいことを自由に記述してください"
                     : "空欄のままでも診断結果に基づいたおすすめプランを提案します"
                   }
                 </p>
@@ -831,8 +841,8 @@ export default function HomePage() {
                       htmlFor={option.value}
                       className="flex items-center space-x-4 p-4 rounded-2xl border-2 border-gray-200 peer-data-[state=checked]:border-blue-300 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200"
                     >
-                      <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-data-[state=checked]:border-blue-500 hover:border-blue-500 flex items-center justify-center transition-colors">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 opacity-0 peer-data-[state=checked]:opacity-100 transition-opacity"></div>
+                      <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-500 flex items-center justify-center transition-colors">
+                        <div className="w-2 h-2 rounded-full bg-white opacity-0 peer-data-[state=checked]:opacity-100 transition-opacity"></div>
                       </div>
                       <span className="text-gray-700 font-medium flex-1 peer-data-[state=checked]:text-blue-500 transition-colors">{option.label}</span>
                     </Label>

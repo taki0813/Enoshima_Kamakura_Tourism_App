@@ -1,3 +1,5 @@
+// Enoshima_Kamakura_Tourism_App/lib/location-service.ts
+
 export interface LocationData {
   latitude: number
   longitude: number

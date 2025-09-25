@@ -14,7 +14,7 @@ export interface TouristSpot {
     lng: number
   }
   openHours: string
-  bestVisitTime?: string | null
+  bestVisitTime?: "morning" | "afternoon" | "evening" | null
   entrance_fee: number
   image: string
   tips: string[]
@@ -148,7 +148,7 @@ export function calculateTourDuration(spots: TouristSpot[]): number {
 // 時間ベースの観光プランを生成
 export function generateTimeBasedTourPlan(spots: TouristSpot[], startTime: string, startLocation: string): any[] {
   const startDateTime = new Date(`2024-01-01T${startTime}:00`)
-  const timeBasedPlan = []
+  const timeBasedPlan: any[] = []
   let currentTime = new Date(startDateTime)
 
   // bestVisitTime を優先して並び替え（morning -> afternoon -> evening の順に開始時間へ揃える）
@@ -415,7 +415,6 @@ export async function generateEnhancedTourPlan(diagnosisData: {
   const enhancedPlan: TouristSpot[] = []
 
   if (diagnosisData.customSpot) {
-    // Ask API to find an existing spot by name (server executes Prisma)
     const existingResp = await fetch('/api/spots', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ searchName: diagnosisData.customSpot }) })
     const existingJson = await existingResp.json().catch(() => ({} as any))
     const existingSpot = existingJson?.spot as any | null

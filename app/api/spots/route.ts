@@ -1,7 +1,7 @@
 // Enoshima_Kamakura_Tourism_App/app/api/spots/route.ts
 
 import { NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+import { prisma } from "@/lib/prisma" // ★修正: 名前付きインポートに変更
 
 function mapSpot(s: any) {
   if (!s) return null
@@ -50,6 +50,15 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}))
   const searchName = body?.searchName as string | undefined
   if (!searchName) return NextResponse.json({ spot: null })
-  const existing = await prisma.touristSpot.findFirst({ where: { name: { contains: searchName, mode: "insensitive" } }, include: { coupons: true } })
+  
+  const existing = await prisma.touristSpot.findFirst({
+    where: {
+      name: {
+        contains: searchName,
+        // ★修正: MongoDBの互換性のために mode: "insensitive" を削除
+      }
+    },
+    include: { coupons: true }
+  })
   return NextResponse.json({ spot: existing ? mapSpot(existing) : null })
 }

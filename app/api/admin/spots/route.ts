@@ -1,16 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { checkAdminAuth } from "@/lib/admin-auth"
-import { prisma } from "@/lib/prisma"
-import { getCoordinatesFromAddress } from "@/lib/location-service"
+import { prisma } from '@/lib/prisma'
+import { getCoordinatesFromAddress } from "@/lib/location-service" // getCoordinatesFromAddressはlib/location-service.tsで定義されている前提
 
 export async function GET(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  // 修正: checkAdminAuthにrequestを渡す
+  if (!await checkAdminAuth(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {
     const spots = await prisma.touristSpot.findMany({
       orderBy: {
-        createdAt: "asc",
+        id: "asc", // MongoDBスキーマに合わせてidでソート
       },
     })
     return NextResponse.json(spots)
@@ -21,15 +22,18 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  // 修正: checkAdminAuthにrequestを渡す
+  if (!await checkAdminAuth(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {
     const data = await request.json()
+    // 座標取得のため、一時的なプロパティとして扱われることを考慮
     const { lat, lng, address, ...rest } = data
 
     let coordinates = { lat, lng }
     if (address) {
+      // getCoordinatesFromAddressはlib/location-serviceで定義されていることが前提
       const geocoded = await getCoordinatesFromAddress(address)
       if (geocoded) {
         coordinates = geocoded
@@ -50,7 +54,8 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  // 修正: checkAdminAuthにrequestを渡す
+  if (!await checkAdminAuth(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {
@@ -80,7 +85,8 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  // 修正: checkAdminAuthにrequestを渡す
+  if (!await checkAdminAuth(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {

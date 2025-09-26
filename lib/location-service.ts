@@ -197,4 +197,29 @@ export function loadTourProgress(userId: string, totalSpots: number): TourProgre
     completionPercentage: 0,
     points: 0,
   }
+
+}
+export async function getCoordinatesFromAddress(address: string): Promise<{ lat: number, lng: number } | null> {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+  if (!apiKey) {
+    console.error("Google Maps API key not configured for geocoding.");
+    return null;
+  }
+
+  const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
+  try {
+      const response = await fetch(geocodeUrl);
+      const data = await response.json();
+
+      if (data.status === "OK" && data.results.length > 0) {
+          const location = data.results[0].geometry.location;
+          return { lat: location.lat, lng: location.lng };
+      }
+      return null;
+  } catch (error) {
+      console.error("Geocoding failed:", error);
+      return null;
+  }
 }

@@ -5,6 +5,8 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import "./globals.css"
+// 作成したSessionProviderWrapperをインポート
+import SessionProviderWrapper from "@/components/session-provider-wrapper"
 
 export const metadata: Metadata = {
   title: "江ノ島・鎌倉観光ガイド",
@@ -20,7 +22,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        {/* SessionProviderWrapperでアプリケーション全体をラップ */}
+        <SessionProviderWrapper>
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        </SessionProviderWrapper>
         <Analytics />
       </body>
     </html>
